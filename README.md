@@ -1,4 +1,24 @@
-Waste Classification API ♻️A high-performance Computer Vision API built to identify recyclable waste types. This project uses FastAPI to serve a Google ViT (Vision Transformer) model that has been fine-tuned using LoRA (Low-Rank Adaptation) to recognize 15 specific categories of waste.🚀 FeaturesState-of-the-art Vision: Uses google/vit-base-patch16-224 as the backbone.Efficient Fine-Tuning: Uses PEFT & LoRA adapters (~10MB) instead of full model weights (~350MB).Fast Inference: Optimized for local CPU execution.Async API: Built on FastAPI for non-blocking performance.15 Classes: Specifically trained to detect common household recyclables.🛠️ Tech StackFramework: FastAPI (Python)ML Engine: PyTorchModel Library: Hugging Face Transformers & PEFTImage Processing: Pillow (PIL)Server: Uvicorn📂 Project Structure.
+# Waste Classification API ♻️
+
+A high-performance Computer Vision API built to identify recyclable waste types. This project uses FastAPI to serve a Google ViT (Vision Transformer) model that has been fine-tuned using LoRA (Low-Rank Adaptation) to recognize 15 specific categories of waste.🚀
+
+## 🚀 Features
+
+- ** State-of-the-art Vision **: Uses google/vit-base-patch16-224 as the backbone.
+- ** Efficient Fine-Tuning ** : Uses PEFT & LoRA adapters (~10MB) - instead of full model weights (~350MB).
+- ** Fast Inference: ** Optimized for local CPU execution.
+- ** Async API ** : Built on FastAPI for non-blocking performance.
+- ** 15 Classes ** : Specifically trained to detect common household recyclables.
+
+## 🛠️ Tech Stack
+
+- ** Framework ** : FastAPI (Python)
+- ** ML Engine ** : PyTorch
+- ** Model Library ** : Hugging Face Transformers & PEFT
+- ** Image Processing ** : Pillow (PIL)
+- ** Server ** : Uvicorn📂
+
+## Project Structure.
 
 ├── main.py # The FastAPI application logic
 ├── requirements.txt # Python dependencies
@@ -8,12 +28,15 @@ Waste Classification API ♻️A high-performance Computer Vision API built to i
 │ └── ...
 └── venv/ # Virtual Environment (Git ignored)
 
-⚡ Installation & SetupClone the repositorygit clone [https://github.com/YOUR_USERNAME/waste-classification-api.git](https://github.com/YOUR_USERNAME/waste-classification-api.git)
+## ⚡ Installation & Setup
+
+1. Clone the repositorygit clone [https://github.com/YOUR_USERNAME/waste-classification-api.git](https://github.com/YOUR_USERNAME/waste-classification-api.git)
 
 cd waste-classification-api
-Create a Virtual Environment# Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
+
+2. Create a Virtual Environment# Mac/Linux
+   python3 -m venv venv
+   source venv/bin/activate
 
 # Windows
 
