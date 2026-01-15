@@ -8,7 +8,7 @@ A high-performance Computer Vision API built to identify recyclable waste types.
 - ** Efficient Fine-Tuning ** : Uses PEFT & LoRA adapters (~10MB) - instead of full model weights (~350MB).
 - ** Fast Inference: ** Optimized for local CPU execution.
 - ** Async API ** : Built on FastAPI for non-blocking performance.
-- ** 15 Classes ** : Specifically trained to detect common household recyclables.
+- ** 30 Classes ** : Specifically trained to detect common household recyclables.
 
 ## 🛠️ Tech Stack
 
