@@ -162,15 +162,29 @@ async def predict(
             outputs = model(**inputs)
             logits = outputs.logits
 
-            predicted_class_idx = logits.argmax(-1).item()
+            # Apply softmax to get probabilities: σ(z)_i = e^z_i / Σ(e^z_j)
+            probabilities = torch.softmax(logits, dim=1)
 
-            probs = torch.softmax(logits, dim=1)
-            confidence = probs[0][predicted_class_idx].item()
+            # Extract top 3 predictions
+            top_probs, top_indices = torch.topk(probabilities, 3, dim=1)
+
+            predictions = []
+            for i in range(3):
+                idx = top_indices[0][i].item()
+                confidence = top_probs[0][i].item()
+                predictions.append({
+                    "rank": i + 1,
+                    "label": id2label[idx].replace("_", " ").title(),
+                    "confidence": confidence,
+                    "id": idx
+                })
 
         return {
-            "label": id2label[predicted_class_idx].replace("_", " ").title(),
-            "confidence": confidence,
-            "id": predicted_class_idx
+            "label": predictions[0]["label"],
+            "confidence": predictions[0]["confidence"],
+            "id": predictions[0]["id"],
+            "predictions": predictions,
+            "top_prediction": predictions[0]
         }
     except UnidentifiedImageError:
         raise HTTPException(status_code=400, detail="Invalid image file. Could not identify image format.")
