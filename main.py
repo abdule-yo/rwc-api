@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
 
         base_model = ViTForImageClassification.from_pretrained(
             base_model_name,
-            num_labels=15,
+            num_labels=30,
             ignore_mismatched_sizes=True
         )
 
@@ -45,7 +45,22 @@ async def lifespan(app: FastAPI):
             11: "glass_cosmetic_containers",
             12: "glass_food_jars",
             13: "magazines",
-            14: "newspaper"
+            14: "newspaper",
+            15: "office_paper",
+            16: "paper_cups",
+            17: "plastic_cup_lids",
+            18: "plastic_detergent_bottles",
+            19: "plastic_food_containers",
+            20: "plastic_shopping_bags",
+            21: "plastic_soda_bottles",
+            22: "plastic_straws",
+            23: "plastic_trash_bags",
+            24: "plastic_water_bottles",
+            25: "shoes",
+            26: "steel_food_cans",
+            27: "styrofoam_cups",
+            28: "styrofoam_food_containers",
+            29: "tea_bags"
         }
 
         ml_models["processor"] = processor
