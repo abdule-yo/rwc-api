@@ -7,7 +7,6 @@ client = TestClient(app)
 
 def test_predict_valid_image():
     print("Testing valid image...")
-    # Create a dummy image
     img = Image.new('RGB', (224, 224), color = 'red')
     img_byte_arr = io.BytesIO()
     img.save(img_byte_arr, format='JPEG')
@@ -57,14 +56,9 @@ def test_cors():
 
 if __name__ == "__main__":
     print("Starting tests...")
-    # Use context manager to trigger lifespan events
     with TestClient(app) as client:
-        # Re-assign the global client or pass it
-        # We'll just define the functions to take client or use the local one
-        
         def test_predict_valid_image(c):
             print("Testing valid image...")
-            # Create a dummy image
             img = Image.new('RGB', (224, 224), color = 'red')
             img_byte_arr = io.BytesIO()
             img.save(img_byte_arr, format='JPEG')
@@ -77,7 +71,6 @@ if __name__ == "__main__":
             
             if response.status_code == 200:
                 print("✅ Valid image test passed")
-                # print(response.json())
             else:
                 print(f"❌ Valid image test failed: {response.status_code}")
                 print(response.text)
@@ -104,7 +97,6 @@ if __name__ == "__main__":
                     "Access-Control-Request-Method": "POST",
                 }
             )
-            # Allow * OR reflected origin
             allow_origin = response.headers.get("access-control-allow-origin")
             if response.status_code == 200 and (allow_origin == "*" or allow_origin == "http://localhost:3000"):
                 print("✅ CORS test passed")

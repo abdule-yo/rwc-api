@@ -1,12 +1,22 @@
-from fastapi import FastAPI, UploadFile, HTTPException, File
+from fastapi import FastAPI, UploadFile, HTTPException, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from transformers import ViTForImageClassification, ViTImageProcessor
 from peft import PeftModel
 from PIL import Image, UnidentifiedImageError
+from typing import Optional
+import httpx
+import re
 import io
 import torch
-import math
+
+URL_REGEX = re.compile(
+    r'^https?://'
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'
+    r'localhost|'
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+    r'(?::\d+)?'
+    r'(?:/?|[/?]\S+)$', re.IGNORECASE)
 
 ml_models = {}
 
@@ -88,15 +98,57 @@ async def read_root():
     return {"Hello": "World"}
 
 @app.post("/predict")
-async def predict(file: UploadFile = File()):
+async def predict(
+    file: Optional[UploadFile] = File(None),
+    url: Optional[str] = Form(None)
+):
     if "model" not in ml_models or "processor" not in ml_models:
          raise HTTPException(status_code=503, detail="Model not loaded")
 
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Input must be an image/jpeg or image/png")
+    if not file and not url:
+        raise HTTPException(status_code=400, detail="Either 'file' or 'url' must be provided")
+
+    if file and url:
+        raise HTTPException(status_code=400, detail="Provide either 'file' or 'url', not both")
+
+    content: bytes
+    content_type: str = ""
+
+    if url:
+        if not URL_REGEX.match(url):
+            raise HTTPException(status_code=400, detail="Invalid URL format. Must be a valid HTTP/HTTPS URL")
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.get(url, follow_redirects=True)
+
+                if response.status_code == 404:
+                    raise HTTPException(status_code=404, detail="Image not found at the provided URL")
+
+                if response.status_code != 200:
+                    raise HTTPException(status_code=400, detail=f"Failed to fetch image: HTTP {response.status_code}")
+
+                content_type = response.headers.get("content-type", "")
+                if not content_type.startswith("image/"):
+                    raise HTTPException(status_code=400, detail=f"URL does not point to an image. Content-Type: {content_type}")
+
+                content = response.content
+
+        except httpx.TimeoutException:
+            raise HTTPException(status_code=408, detail="Request timed out while fetching image from URL")
+        except httpx.RequestError as e:
+            raise HTTPException(status_code=400, detail=f"Failed to fetch image from URL: {str(e)}")
+        except HTTPException:
+            raise
+        except Exception:
+            raise HTTPException(status_code=500, detail="Internal server error while fetching image")
+
+    else:
+        if not file.content_type or not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Input must be an image/jpeg or image/png")
+        content = await file.read()
 
     try:
-        content = await file.read()
         image = Image.open(io.BytesIO(content)).convert("RGB")
 
         processor = ml_models["processor"]
